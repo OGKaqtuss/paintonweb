@@ -6,7 +6,7 @@
  * Time: 21:50
  */
 
-class Home extends Controller
+class home extends Controller
 {
     public function index($param1, $param2) {
 
