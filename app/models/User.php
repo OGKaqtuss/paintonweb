@@ -1,12 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Niclas
- * Date: 01-11-2018
- * Time: 22:10
- */
 
-class User
+use Illuminate\Database\Eloquent\Model as Eloquent;
+
+class User extends Eloquent
 {
     public $name;
+
+    public $timestamps = [];
+
+    protected $fillable = ['username', 'email'];
 }

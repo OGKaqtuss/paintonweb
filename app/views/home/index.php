@@ -1,1 +1,2 @@
-<p class="desc"><?= $data->desc ?></p>
+<?php /** @var $data */ ?>
+<p class="desc"><?= $data->desc; ?></p>
