@@ -18,6 +18,8 @@ class App
     {
         $url = $this->parseUrl();
 
+        echo "PARSED URL: " . $url;
+
         if(file_exists('../app/controllers/'. $url[0] .'.php')){
             $this->controller = $url[0];
             unset($url[0]);
@@ -36,6 +38,7 @@ class App
 
         $this->params = $url ? array_values($url) : [];
 
+        echo "Controller: " . $this->controller;
         echo 'URL: ' . $_GET['url'];
 
         call_user_func_array([$this->controller, $this->method], $this->params);
