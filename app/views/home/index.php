@@ -1,1 +1,1 @@
-<p class="desc"><?= $this->desc ?></p>
+<p class="desc"><?= $data->desc ?></p>
