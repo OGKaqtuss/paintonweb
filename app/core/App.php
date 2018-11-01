@@ -18,7 +18,7 @@ class App
     {
         $url = $this->parseUrl();
 
-        array_splice($url, 0, 1);
+        //array_splice($url, 0, 1);
 
         if(file_exists('../app/controllers/'. $url[0] .'.php')){
             $this->controller = $url[0];
