@@ -16,7 +16,9 @@ class App
 
     public function __construct()
     {
-        $url = array_slice($this->parseUrl(), 0, 1);
+        $url = $this->parseUrl();
+
+        unset($url[0]);
 
         print_r("PARSED URL: ");
         print_r($url);
