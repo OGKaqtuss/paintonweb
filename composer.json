@@ -4,7 +4,8 @@
     },
     "autoload": {
         "classmap": [
-            "app/models"
+            "app/models/frontend",
+            "app/models/adminhtml"
         ]
     }
 }

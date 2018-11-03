@@ -6,9 +6,9 @@ $capsule = new Capsule();
 
 $capsule->addConnection([
     'driver' => 'mysql',
-    'host' => '127.0.0.1',
+    'host' => 'localhost',
     'username' => 'root',
-    'password' => '',
+    'password' => 'rootpw',
     'database' => 'paintonweb',
     'charset' => 'utf8',
     'collation' => 'utf8_unicode_ci',

@@ -6,9 +6,9 @@
  * Time: 22:28
  */
 
-class test
+class game extends Controller
 {
     public function index(){
-        echo "MAh man";
+        $this->view('game/index');
     }
 }

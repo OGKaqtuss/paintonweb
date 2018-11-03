@@ -1,0 +1,19 @@
+{
+  "name": "paintonweb",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OGKaqtuss/paintonweb.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OGKaqtuss/paintonweb/issues"
+  },
+  "homepage": "https://github.com/OGKaqtuss/paintonweb#readme"
+}
