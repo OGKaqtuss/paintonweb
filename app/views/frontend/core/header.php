@@ -18,6 +18,7 @@
     <title><?= $data->title?></title>
 </head>
 <body>
+<?php if(!isset($data->noheader)): ?>
 <header>
     <div class="inner-header">
         <div class="header-logo">
@@ -28,6 +29,6 @@
                 <li>Hello</li>
             </ul>
         </nav>
-        </nav>
     </div>
 </header>
+<?php endif; ?>

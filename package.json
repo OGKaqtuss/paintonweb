@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/OGKaqtuss/paintonweb/issues"
   },
-  "homepage": "https://github.com/OGKaqtuss/paintonweb#readme"
+  "homepage": "https://github.com/OGKaqtuss/paintonweb#readme",
+  "devDependencies": {
+    "eslint-config-google": "^0.9.1",
+    "uglifyjs-webpack-plugin": "^2.0.1",
+    "webpack": "^4.10.1",
+    "webpack-cli": "^2.1.5"
+  }
 }
