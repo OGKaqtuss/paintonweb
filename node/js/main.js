@@ -4,246 +4,243 @@ require('./jquery');
 var canvas = $("#game");
 var ctx = canvas[0].getContext("2d");
 
-var drawings = [];
-var paint = false;
+var canPaint = false;
+var lineWidth = ctx.lineWidth = 4;
+var lineJoin = ctx.lineJoin = "round";
+var fillStyle = ctx.fillStyle = "#000";
+var gameContainer = $("#gameContainer");
 
-$(document).mouseup(function(e){
-    paint = false;
+var host = io('127.0.0.1:3333');
+var room;
 
-    drawings = [];
-})
-
-canvas.mousedown(function(e){
-    var drawPoint = [];
-    paint = true;
-
-    drawPoint.push(e.pageX - this.offsetLeft);
-    drawPoint.push(e.pageY - this.offsetTop);
-})
-
-canvas.mousemove(function(e){
-    if(!paint)
-        return;
-
-    var drawPoint = [];
-
-    drawPoint.push(e.pageX - this.offsetLeft);
-    drawPoint.push(e.pageY - this.offsetTop);
-
-    drawings.push(drawPoint);
-
-    draw();
-})
-
-canvas.mouseleave(function(e){
-    if(!paint){
-        return;
-    }
-
-    var drawPoint = [];
-
-    drawPoint.push(e.pageX - this.offsetLeft);
-    drawPoint.push(e.pageY - this.offsetTop);
-
-    drawings.push(drawPoint);
-
-    draw();
-    drawings = [];
+$(".start-button").on('click', function(e){
+    $("#lobbyContainer").css('display', 'none');
+    gameContainer.css('display', 'block');
 });
 
-canvas.mouseenter(function(e){
-    if(!paint){
-        return;
-    }
-
-    var drawPoint = [];
-
-    drawPoint.push(e.pageX - this.offsetLeft);
-    drawPoint.push(e.pageY - this.offsetTop);
-
-    drawings.push(drawPoint);
-    console.log(drawings);
+$("#join").on('click', function(e){
+    sendGameEvent('joinRoom', {room: 'room-1'});
 });
 
-function draw(){
-    //console.log(drawings);
+$("#create").on('click', function(e){
+    sendGameEvent('createGame');
+});
 
-    for(var i in drawings) {
-
-        i = parseInt(i);
-
-        var lastX = drawings[i][0];
-        var lastY = drawings[i][1];
-
-        var currentX = drawings[i+1][0];
-        var currentY = drawings[i+1][1];
-
-        ctx.beginPath();
-        ctx.moveTo(lastX,lastY);
-        ctx.lineTo(currentX, currentY);
-        ctx.strokeStyle = ctx.fillStyle = "#000";
-        ctx.lineJoin = ctx.lineCap = "round";
-        ctx.lineWidth = 5;
-        ctx.closePath();
-        ctx.stroke();
-
-        drawings.shift();
-    }
-}
-
-/*var canvas = $("#game");
-var ctx = canvas[0].getContext("2d");
-var lastX;
-var lastY;
+var mouseposPrevX;
+var mouseposPrevY;
+var mouseposX;
+var mouseposY;
 var paint = false;
+var drawingReset = false;
 
-gameInit();
-
-function onMouseUp(e, self) {
-    paint = false;
-};
-function onMouseDown(e, self) {
-    lastX = e.pageX - self.offsetLeft;
-    lastY = e.pageY - self.offsetTop;
+$(document).on('mousemove', function(e){
+    if(!canPaint) return;
+    draw(e.clientX, e.clientY);
+})
+$(document).on('mouseup', function(){
+    if(!canPaint) return;
+    resetDrawing();
+})
+canvas.on('mousedown', function(e){
+    if(!canPaint) return;
 
     paint = true;
-}
-function onMouseMove(e, self) {
-    if(!paint)
-        return;
 
-    var currentX = e.pageX - self.offsetLeft;
-    var currentY = e.pageY - self.offsetTop;
+    mouseposX = e.pageX - this.offsetLeft;
+    mouseposY = e.pageY - this.offsetTop;
 
-    //console.log(this);
+    drawPixel(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
+})
 
+function drawPixel(){
     ctx.beginPath();
-    ctx.moveTo(lastX,lastY);
-    ctx.lineTo(currentX, currentY);
-    ctx.strokeStyle = ctx.fillStyle = "#000";
-    ctx.lineJoin = ctx.lineCap = "round";
-    ctx.lineWidth = 12;
+    ctx.moveTo(mouseposX, mouseposY);
+    ctx.lineTo(mouseposX+1, mouseposY+1);
     ctx.closePath();
     ctx.stroke();
-
-    //console.log("LAST: " + lastX + " | LASTY: " + lastY + " | CURRENTX: " + currentX + " | CURRENTY: " + currentY);
-
-    lastX = currentX;
-    lastY = currentY;
-};
-
-function gameInit(){
-    $(document).mouseup(function(e){
-        onMouseUp(e, this);
-    });
-    canvas.mousedown(function(e){
-
-        onMouseDown(e, this);
-    });
-    $(document).mousemove(function(e){
-        onMouseMove(e, this);
-    });
 }
 
-
-/*class CanvasDraw {
-
-    canvas = $("#game");
-    ctx = this.canvas.getContext("2d");
-    lastY = null;
-    lastX = null;
-
-    constructor(){
-        this.canvas.on('mouseup', this.onMouseUp(e));
-        this.canvas.on('mousemove', this.onMouseMove(e));
-        this.canvas.on('mousedown', this.onMouseDown(e));
-    }
-
-    onMouseUp(e){
-
-    }
-
-    onMouseMove(e){
-        let currentX = e.touches[0].pageX;
-        let currentY = e.touches[0].pageY;
-
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.lastX,this.lastY);
-        this.ctx.lineTo(currentX, currentY);
-        this.ctx.closePath();
-        this.ctx.strokeStyle = "#000";
-
-        this.ctx.lineWidth = 7;
-
-        this.ctx.stroke();
-
-        this.lastX = currentX;
-        this.lastY = currentY;
-    }
-
-    onMouseDown(e){
-        this.lastX = e.touches[0].pageX;
-        this.lastY = e.touches[0].pageY;
-    }
-
-
-}*/
-
-/*
-
-/*
-function addClick(x, y, dragging)
-{
-    clickX.push(x);
-    clickY.push(y);
-    clickDrag.push(dragging);
+function draw(clientX, clientY){
+    if(!paint) return;
+    updateMousePosition(clientX,clientY);
+    var test = createDrawCommandLine(1, 11, mouseposPrevX, mouseposPrevY, mouseposX, mouseposY);
+    performDrawCommand(test);
 }
 
-$('#game').mousedown(function(e){
-    var mouseX = e.pageX - this.offsetLeft;
-    var mouseY = e.pageY - this.offsetTop;
+function updateMousePosition(clientX, clientY) {
+    var bound = canvas[0].getBoundingClientRect();
+    var width = canvas[0].width;
+    var height = canvas[0].height;
+    var bWidth =  bound.width;
+    var bHeight = bound.height;
+    var pageX = (clientX - bound.left) / bWidth;
+    var pageY = (clientY - bound.top) / bHeight;
 
-    paint = true;
-    addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
-    redraw();
-});
-
-$('#game').mousemove(function(e){
-    if(paint){
-        addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
-        redraw();
+    if(!drawingReset) {
+        mouseposPrevX = mouseposX;
+        mouseposPrevY = mouseposY;
+        mouseposX = Math.floor(pageX * width);
+        mouseposY = Math.floor(pageY * height);
+    } else {
+        mouseposPrevX = mouseposX = Math.floor(pageX * width);
+        mouseposPrevY = mouseposY = Math.floor(pageY * height);
+        drawingReset = false;
     }
-});
+}
 
-$(document).mouseup(function(e){
-    paint = false;
-});
+function createDrawCommandLine(color, thick, prevX, prevY, x, y){
+    return [0, color, thick, prevX, prevY, x, y];
+}
 
-function redraw(){
-    context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
+function performDrawCommand(options) {
+    switch (options[0]) {
+        case 0:
+            var thickness = Math.floor(options[2]);
+            var halfThickness = Math.floor(Math.ceil(thickness / 2));
+            var prevX = createCoordinate(Math.floor(options[3]), -halfThickness, canvas[0].width + halfThickness);
+            var prevY = createCoordinate(Math.floor(options[4]), -halfThickness, canvas[0].height + halfThickness);
+            var xCord = createCoordinate(Math.floor(options[5]), -halfThickness, canvas[0].width + halfThickness);
+            var yCord = createCoordinate(Math.floor(options[6]), -halfThickness, canvas[0].height + halfThickness);
+            plotLine(prevX, prevY, xCord, yCord, thickness);
+            break;
+    }
+}
 
-    this.canvasCtx.fillStyle = this.canvasCtx.strokeStyle = this.brush.getColor(s),
-        this.canvasCtx.lineWidth = r,
-        this.canvasCtx.lineJoin = this.canvasCtx.lineCap = "round",
-        this.canvasCtx.beginPath(),
-        this.canvasCtx.moveTo(t, e),
-        this.canvasCtx.lineTo(n, o),
-        this.canvasCtx.closePath(),
-        this.canvasCtx.stroke()
+function plotLine(prevX, prevY, xCord, yCord, thickness){
+    ctx.lineWidth = thickness;
+    ctx.beginPath();
+    ctx.moveTo(prevX, prevY);
+    ctx.lineTo(xCord, yCord);
+    ctx.closePath();
+    ctx.stroke();
+}
 
-    context.strokeStyle = context.fillStyle = "#4950df";
-    context.lineJoin = context.lineCap = "round";
-    context.lineWidth = 5;
-
-    for(var i=0; i < clickX.length; i++) {
-        context.beginPath();
-        if(clickDrag[i] && i){
-            context.moveTo(clickX[i-1], clickY[i-1]);
-        }else{
-            context.moveTo(clickX[i]-1, clickY[i]);
+function createCoordinate(cord, negativeThickness, canvasSize){
+    if(cord < negativeThickness) {
+        return negativeThickness;
+    }
+    else {
+        if (cord > canvasSize) {
+            return canvasSize;
+        }else {
+            return cord;
         }
-        context.lineTo(clickX[i], clickY[i]);
-        context.closePath();
-        context.stroke();
     }
-}*/
+}
+
+function resetDrawing(){
+    mouseposPrevX = null;
+    mouseposPrevY = null;
+    mouseposX = null;
+    mouseposY = null;
+    paint = false;
+    drawingReset = true;
+}
+
+function sendGameEvent(type, data) {
+    if(!data) data = [];
+    host.emit('gameEvent', {
+        'type': type,
+        'data': data
+    });
+}
+
+function gameReady(data){
+
+    var dateTime = data.time;
+    var word = data.word;
+
+    console.log(gameContainer.find("#gameReady"));
+
+    var gameReady = gameContainer.find("#gameReady");
+
+
+    gameReady.find('.word').text(word);
+    gameReady.css('display', 'block');
+    var timer = setInterval(function(){
+        var dateDiff = dateTime - new Date().getTime();
+        console.log(dateDiff);
+        gameReady.find('.counter').text(Math.ceil(dateDiff/1000).toFixed(0));
+        if(dateDiff <= 0){
+            clearInterval(timer);
+            gameContainer.find("#gameReady").css('display', 'none');
+        }
+    }, 500);
+
+}
+
+host.on('gameEvent', function(msg){
+    console.log(msg);
+    var data = msg.data;
+
+    switch(msg.type) {
+        case 'newGame':
+            room = data.room;
+            break;
+        case 'roomJoin':
+            room = data.room;
+            break;
+        case 'gameReady':
+            gameReady(data);
+            break;
+        case 'gameStart':
+            canPaint = true;
+            console.log("GAME STARTED!");
+            break;
+        case 'gameEnd':
+            sendGameEvent('gameEnd', {room: room, canvasData: canvas[0].toDataURL()});
+            canPaint = false;
+            break;
+        case 'gameEndCanvas':
+            gameContainer.prepend("<img width='600px' height='600px' src='"+data.canvasData+"'>");
+            //console.log(data.canvasData);
+            break;
+    }
+});
+
+/*var halfthickness = Math.floor(thickness / 2);
+    var doubleThickness = halfthickness * halfthickness;
+
+    var minX = Math.min(prevX, xCord) - halfthickness;
+    var minY = Math.min(prevY, yCord) - halfthickness;
+    var maxX = Math.min(prevX, xCord) + halfthickness;
+    var maxY = Math.min(prevY, yCord) + halfthickness;
+
+    prevX -= minX;
+    prevY -= minY;
+    xCord -= maxX;
+    yCord -= maxY;
+
+    var canvasData = ctx.getImageData(minX, minY, maxX - minX, maxY - minY);
+    function setCanvasData(xData, yData) {
+        for (var x = -halfthickness; x <= halfthickness; x++) {
+            for (var y = -halfthickness; y <= halfthickness; y++) {
+                if(x * x + y * y < doubleThickness) {
+                    // Index of the pixel in the array
+                    var index = 4 * ((yData + y) * canvasData.width + xData + x);
+
+                    if(index >= 0 && index < canvasData.data.length) {
+                        canvasData.data[index] = 51;
+                        canvasData.data[index + 1] = 51;
+                        canvasData.data[index + 2] = 51;
+                        canvasData.data[index + 3] = 255;
+                    }
+                }
+            }
+        }
+    }
+
+    if(xCord == prevX && prevY == yCord)
+        setCanvasData(prevX, prevY);
+    else {
+        ctx.fillStyle = "#000";
+        ctx.lineWidth = thickness;
+        ctx.lineJoin = "round";
+        ctx.beginPath();
+        ctx.moveTo(prevX, prevY);
+        ctx.lineTo(xCord, yCord);
+        ctx.closePath();
+        ctx.stroke();
+    }
+    ctx.putImageData(canvasData, minX, minY);*/
+//return t < e ? e : t > n ? n : t;

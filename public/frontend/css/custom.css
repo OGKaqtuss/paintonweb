@@ -7,14 +7,18 @@
 }
 
 header {
+    background-color: #fff;
+    box-shadow: 0px 0px 10px 0px black;
+    min-height: 60px;
     width: 100%;
-    height: 80px;
+    padding: 15px;
+    font-size: 22px;
+    color: #111;
 }
 
 header .inner-header {
-    width: 90%;
+    width: 85%;
     margin: auto;
-    padding: 30px;
 }
 
 header nav ul li {
@@ -36,12 +40,85 @@ header .nav-right ul {
     min-width: 40%;
 }
 
+header .nav-right ul li {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.header-title {
+    font-weight: bold;
+    font-size: 25px;
+}
+
+.home-banner {
+    height: calc(100vh - 60px);
+    background:url('/media/images/mountain.jpg'), #2E2E3E;
+    background-blend-mode: multiply;
+    -webkit-background-size: cover;
+    background-size: cover;
+    background-position: center;
+}
+
+.inner-banner {
+    color: #fff;
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    transform: translate(-50%, -50%);
+}
+
+#gameContainer {
+    width: 100%;
+    height: 100%;
+    padding: 35px;
+}
+
 #game {
     border: 1px solid black;
     -webkit-backface-visibility: hidden;
     -moz-backface-visibility: hidden;
     -ms-backface-visibility: hidden;
     backface-visibility: hidden;
+}
+
+#gameReady {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    display: none;
+    height: 100%;
+    width: 100%;
+    z-index: 9999;
+    background-color: rgba(0,0,0,0.7);
+}
+
+.game-ready-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.game-ready-container p {
+    font-size: 24px;
+    color: white;
+}
+
+.canvas-container {
+    text-align: center;
+}
+
+.canvas-inner {
+    text-align: center;
+    margin: auto;
+}
+
+.word-container {
+    width: 100%;
+    height: 65px;
 }
 
 #login-page {

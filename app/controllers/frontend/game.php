@@ -11,4 +11,8 @@ class game extends Controller
     public function index(){
         $this->view('game/index');
     }
+
+    public function lobby(){
+        $this->view('game/lobby');
+    }
 }

@@ -7,7 +7,7 @@ class login extends Controller
 
         $data = [];
 
-        $data['noheader'] = 'true';
+        //$data['noheader'] = 'true';
         $this->view('login/index', $data);
     }
 }
