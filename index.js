@@ -114,7 +114,7 @@ function getRandomWord(){
 }
 
 function getRandomTime(){
-    return Math.floor(Math.random()*10)+10;
+    return Math.floor(Math.random()*50)+10;
 }
 
 console.log("Server Started");
